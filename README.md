@@ -1,2 +1,2 @@
 # Vendora
-A project made to enhance my skills
+A project made to improve my skills
