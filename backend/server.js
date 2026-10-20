@@ -5,12 +5,21 @@ require("dotenv").config();
 
 const connectDB = require("./config/db");
 const productRoutes = require("./routes/productRoutes");
-
+const authRoutes = require("./routes/authRoutes");
+const { protect, adminOnly } = require("./middleware/authMiddleware");
+const orderRoutes = require("./routes/orderRoutes");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+
+
+app.use("/api/auth", authRoutes);
+
+
+app.use("/api/orders", orderRoutes);
 
 app.get("/api/health", (req, res) => {
   res.json({ message: "Vendora API is running" });
@@ -18,6 +27,14 @@ app.get("/api/health", (req, res) => {
 
 
 app.use("/api/products", productRoutes);
+
+app.get("/api/auth/me", protect, (req, res) => {
+  res.json({ user: req.user });
+});
+
+app.get("/api/admin/test", protect, adminOnly, (req, res) => {
+  res.json({ message: "Admin access confirmed." });
+});
 
 const PORT = process.env.PORT || 5000;
 
