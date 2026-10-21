@@ -1,6 +1,7 @@
 
 const express = require("express");
 const Product = require("../models/Product");
+const { protect, adminOnly } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ const allowedFields = [
 
 // GET /api/products/low-stock
 // Must appear before /:id
-router.get("/low-stock", async (req, res) => {
+router.get("/low-stock", protect, adminOnly, async (req, res) => {
   try {
     const products = await Product.find({
       $expr: {
@@ -94,7 +95,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // POST /api/products
-router.post("/", async (req, res) => {
+router.post("/", protect, adminOnly, async (req, res) => {
   try {
     const {
       name,
@@ -144,7 +145,7 @@ router.post("/", async (req, res) => {
 });
 
 // PUT /api/products/:id
-router.put("/:id", async (req, res) => {
+router.put("/:id", protect, adminOnly, async (req, res) => {
   try {
     if (!isValidId(req.params.id)) {
       return res.status(400).json({ message: "Invalid product ID" });
@@ -190,7 +191,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE /api/products/:id
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", protect, adminOnly, async (req, res) => {
   try {
     if (!isValidId(req.params.id)) {
       return res.status(400).json({ message: "Invalid product ID" });
