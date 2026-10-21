@@ -1,2 +1,2 @@
 # Vendora
-A project made to improve my skills
+Ecommerce integrated with inventory management
