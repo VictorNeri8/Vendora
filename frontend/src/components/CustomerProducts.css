@@ -1,0 +1,155 @@
+
+.customer-shop {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 32px;
+  box-sizing: border-box;
+  color: #172033;
+}
+
+.shop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.shop-header h1 {
+  margin: 0 0 8px;
+  font-size: 30px;
+}
+
+.shop-header p {
+  margin: 0;
+  color: #64748b;
+}
+
+.shop-search {
+  margin-bottom: 28px;
+}
+
+.shop-search input {
+  width: 100%;
+  max-width: 440px;
+  padding: 12px 14px;
+  border: 1px solid #dbe2ea;
+  border-radius: 8px;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 22px;
+}
+
+.customer-product-card {
+  overflow: hidden;
+  background: white;
+  border: 1px solid #e5eaf0;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.05);
+}
+
+.product-placeholder {
+  display: grid;
+  place-items: center;
+ /*  height: 150px; */
+  background: #eef2ff;
+  color: #4338ca;
+  font-size: 44px;
+  font-weight: 700;
+  width: 100%;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.customer-product-info {
+  padding: 18px;
+}
+
+.product-category {
+  margin: 0 0 8px;
+  color: #64748b;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.customer-product-info h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.product-description {
+  min-height: 40px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.product-card-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.product-card-footer strong {
+  color: #1d4ed8;
+  font-size: 21px;
+}
+
+.stock-available,
+.stock-unavailable {
+  font-size: 13px;
+}
+
+.stock-available {
+  color: #15803d;
+}
+
+.stock-unavailable {
+  color: #dc2626;
+}
+
+.shop-message {
+  padding: 20px 0;
+  color: #64748b;
+}
+
+.shop-error {
+  color: #dc2626;
+}
+
+@media (max-width: 600px) {
+  .customer-shop {
+    padding: 20px 16px;
+  }
+
+  .shop-header h1 {
+    font-size: 25px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 12px;
+  }
+
+  .customer-product-info {
+    padding: 12px;
+  }
+}
+
+
+.customer-product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}

@@ -1,0 +1,160 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  background: #f3f5f9;
+  color: #172033;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #edf3ff, #f8fafc);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 410px;
+  padding: 36px;
+  background: white;
+  border: 1px solid #e5eaf2;
+  border-radius: 18px;
+  box-shadow: 0 16px 45px rgba(25, 45, 80, 0.09);
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 18px;
+  border-radius: 14px;
+  background: #2457d6;
+  color: white;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+h1 {
+  margin: 0;
+  font-size: 30px;
+}
+
+.subtitle {
+  margin: 8px 0 28px;
+  color: #68758b;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  border: 1px solid #d5dce8;
+  border-radius: 9px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #2457d6;
+  box-shadow: 0 0 0 3px rgba(36, 87, 214, 0.12);
+}
+
+button {
+  padding: 13px;
+  border: none;
+  border-radius: 9px;
+  background: #2457d6;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1946b5;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.error-message {
+  margin: -4px 0 16px;
+  color: #c62828;
+  font-size: 14px;
+}
+
+.footer-text {
+  margin: 24px 0 0;
+  text-align: center;
+  color: #7b8799;
+  font-size: 12px;
+}
+
+
+
+.store-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 32px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5eaf0;
+}
+
+.store-navigation strong {
+  font-size: 24px;
+  color: #1d4ed8;
+}
+
+.store-navigation button,
+.store-return-button {
+  padding: 10px 16px;
+  border: 1px solid #dbe2ea;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172033;
+  cursor: pointer;
+}
+
+.store-navigation button:hover,
+.store-return-button:hover {
+  background: #f1f5f9;
+}
+
+.store-return-button {
+  width: 100%;
+  margin-top: 12px;
+}
+
+@media (max-width: 600px) {
+  .store-navigation {
+    padding: 14px 16px;
+  }
+}

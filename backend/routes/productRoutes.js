@@ -2,6 +2,8 @@
 const express = require("express");
 const Product = require("../models/Product");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
+const upload = require("../middleware/uploadMiddleware");
+
 
 const router = express.Router();
 
@@ -143,6 +145,50 @@ router.post("/", protect, adminOnly, async (req, res) => {
     res.status(400).json({ message: "Failed to create product" });
   }
 });
+
+
+/* POST /api/products/:id/image
+   Upload or replace a product image */
+router.post(
+  "/:id/image",
+  protect,
+  adminOnly,
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      if (!isValidId(req.params.id)) {
+        return res.status(400).json({ message: "Invalid product ID" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({
+          message: "Please select an image to upload"
+        });
+      }
+
+      const product = await Product.findById(req.params.id);
+
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      product.image = `/uploads/products/${req.file.filename}`;
+
+      const updatedProduct = await product.save();
+
+      res.json({
+        message: "Product image uploaded successfully",
+        product: updatedProduct
+      });
+    } catch (error) {
+      console.error("Product image upload failed:", error.message);
+      res.status(500).json({
+        message: "Failed to upload product image"
+      });
+    }
+  }
+);
+
 
 // PUT /api/products/:id
 router.put("/:id", protect, adminOnly, async (req, res) => {
