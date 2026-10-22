@@ -60,6 +60,6 @@ Vendora was developed to make it easier for small businesses to manage online or
 
 ## Developer
 
-Victor Neri
+Victor 
 
 GitHub: https://github.com/VictorNeri8
