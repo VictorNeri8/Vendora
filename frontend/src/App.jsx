@@ -3,7 +3,10 @@ import { useState } from "react";
 import api from "./services/api";
 import Dashboard from "./components/Dashboard";
 import CustomerProducts from "./components/CustomerProducts";
+import CustomerAuth from "./components/CustomerAuth";
 import "./App.css";
+import CustomerOrders from "./components/CustomerOrders";
+import CustomerProfile from "./components/CustomerProfile";
 
 function App() {
   const [token, setToken] = useState(
@@ -23,6 +26,20 @@ function App() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [customerToken, setCustomerToken] = useState(
+    sessionStorage.getItem("vendoraCustomerToken")
+  );
+
+  const [customerUser, setCustomerUser] = useState(() => {
+    try {
+      return (
+        JSON.parse(sessionStorage.getItem("vendoraCustomerUser")) || null
+      );
+    } catch {
+      return null;
+    }
+  });
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -63,6 +80,34 @@ function App() {
     }
   };
 
+  const handleCustomerLogin = (newToken, loggedInUser) => {
+    sessionStorage.setItem("vendoraCustomerToken", newToken);
+    sessionStorage.setItem(
+      "vendoraCustomerUser",
+      JSON.stringify(loggedInUser)
+    );
+
+    setCustomerToken(newToken);
+    setCustomerUser(loggedInUser);
+    setPage("store");
+  };
+
+ const handleCustomerLogout = () => {
+  const confirmed = window.confirm(
+    "Are you sure you want to log out?"
+  );
+
+  if (!confirmed) return;
+
+  sessionStorage.removeItem("vendoraCustomerToken");
+  sessionStorage.removeItem("vendoraCustomerUser");
+  localStorage.removeItem("vendoraCart");
+
+  setCustomerToken(null);
+  setCustomerUser(null);
+  setPage("store");
+};
+
   const handleLogout = () => {
     sessionStorage.removeItem("vendoraToken");
     sessionStorage.removeItem("vendoraUser");
@@ -79,20 +124,135 @@ function App() {
   if (page === "store") {
     return (
       <div>
-        <nav className="store-navigation">
-          <strong>Vendora</strong>
-          <button onClick={() => {
-            setError("");
-            setPage("admin");
-          }}>
-            Admin Login
-          </button>
-        </nav>
 
-        <CustomerProducts />
+
+
+        
+<nav className="store-navigation">
+  <strong className="store-brand">Vendora</strong>
+
+  <div className="store-nav-actions">
+    {customerUser?.role === "customer" ? (
+      <>
+        <button
+          type="button"
+          className="nav-text-button"
+          onClick={() => setPage("customer-orders")}
+        >
+          Order History
+        </button>
+
+
+        <button
+  type="button"
+  className="nav-text-button"
+  onClick={() => setPage("customer-profile")}
+>
+  My Profile
+</button>
+       
+        <button
+          type="button"
+          className="customer-logout-button"
+          onClick={handleCustomerLogout}
+        >
+          Logout
+        </button>
+      </>
+    ) : (
+      <button
+        type="button"
+        className="customer-login-button"
+        onClick={() => setPage("customer-auth")}
+      >
+        Sign In
+      </button>
+    )}
+
+    <button
+      type="button"
+      className="admin-login-button"
+      onClick={() => {
+        setError("");
+        setPage("admin");
+      }}
+    >
+      Admin Login
+    </button>
+  </div>
+</nav>
+
+
+
+
+
+
+
+
+        <CustomerProducts
+          customerToken={
+            customerUser?.role === "customer" ? customerToken : null
+          }
+          customerUser={
+            customerUser?.role === "customer" ? customerUser : null
+          }
+          onSignIn={() => setPage("customer-auth")}
+        />
       </div>
     );
   }
+
+  if (page === "customer-auth") {
+    return (
+      <CustomerAuth
+        onLogin={handleCustomerLogin}
+        onClose={() => setPage("store")}
+      />
+    );
+  }
+
+
+  if (page === "customer-orders") {
+    return (
+      <div>
+        <nav className="store-navigation">
+          <strong>Vendora</strong>
+          <button onClick={() => setPage("store")}>
+            Back to Store
+          </button>
+        </nav>
+
+        <CustomerOrders
+          customerToken={customerToken}
+          onBack={() => setPage("store")}
+        />
+      </div>
+    );
+  }
+
+  if (page === "customer-profile") {
+  return (
+    <div>
+      <nav className="store-navigation">
+        <strong className="store-brand">Vendora</strong>
+
+        <button
+          type="button"
+          className="nav-text-button"
+          onClick={() => setPage("store")}
+        >
+          Back to Store
+        </button>
+      </nav>
+
+      <CustomerProfile
+        customerUser={customerUser}
+        onBack={() => setPage("store")}
+      />
+    </div>
+  );
+}
+
 
   return (
     <main className="login-page">

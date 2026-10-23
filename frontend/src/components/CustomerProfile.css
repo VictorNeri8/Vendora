@@ -1,0 +1,84 @@
+
+.customer-profile-page {
+  min-height: 70vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 48px 20px;
+  background: #f8fafc;
+}
+
+.customer-profile-card {
+  width: 100%;
+  max-width: 480px;
+  padding: 32px;
+  box-sizing: border-box;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.customer-profile-avatar {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 18px;
+  border-radius: 50%;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.customer-profile-card h1 {
+  margin: 0 0 8px;
+  color: #111827;
+}
+
+.customer-profile-subtitle {
+  margin-bottom: 28px;
+  color: #6b7280;
+}
+
+.customer-profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 16px 0;
+  border-bottom: 1px solid #e5e7eb;
+  overflow-wrap: anywhere;
+}
+
+.customer-profile-field span {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.customer-profile-field strong {
+  color: #111827;
+  font-size: 15px;
+}
+
+.customer-profile-card > button {
+  width: 100%;
+  margin-top: 24px;
+  padding: 12px;
+  border: none;
+  border-radius: 9px;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.customer-profile-card > button:hover {
+  background: #1d4ed8;
+}
+
+@media (max-width: 480px) {
+  .customer-profile-card {
+    padding: 24px;
+  }
+}
