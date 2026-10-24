@@ -8,19 +8,36 @@ const { protect, adminOnly } = require("../middleware/authMiddleware");
 const router = express.Router();
 
 // Export product inventory to Excel
+// Export inventory report to Excel
 router.get("/inventory", protect, adminOnly, async (req, res) => {
   try {
-    const products = await Product.find().lean();
+    const products = await Product.find().sort({ name: 1 }).lean();
 
-    const rows = products.map((product) => ({
-      "Product ID": product._id.toString(),
-      "Product Name": product.name,
-      Price: product.price,
-      "Stock Quantity": product.stockQuantity,
-      "Created At": product.createdAt
-        ? new Date(product.createdAt).toLocaleDateString()
-        : ""
-    }));
+    const rows = products.map((product) => {
+      const stock = Number(product.stockQuantity) || 0;
+      const threshold = Number(product.lowStockThreshold) || 0;
+
+      let status = "In Stock";
+
+      if (stock === 0) {
+        status = "Out of Stock";
+      } else if (stock <= threshold) {
+        status = "Low Stock";
+      }
+
+      return {
+        "Product ID": product._id.toString(),
+        "Product Name": product.name,
+        Category: product.category || "",
+        Price: product.price,
+        "Stock Quantity": stock,
+        "Low-Stock Threshold": threshold,
+        "Stock Status": status,
+        "Created At": product.createdAt
+          ? new Date(product.createdAt).toLocaleDateString()
+          : ""
+      };
+    });
 
     const worksheet = XLSX.utils.json_to_sheet(rows);
     const workbook = XLSX.utils.book_new();
@@ -49,6 +66,12 @@ router.get("/inventory", protect, adminOnly, async (req, res) => {
     });
   }
 });
+
+
+
+
+
+
 
 // Export order and sales records to Excel
 router.get("/sales", protect, adminOnly, async (req, res) => {

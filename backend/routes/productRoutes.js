@@ -3,6 +3,7 @@ const express = require("express");
 const Product = require("../models/Product");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 const upload = require("../middleware/uploadMiddleware");
+const { sendLowStockAlert } = require("../services/emailService");
 
 
 const router = express.Router();
@@ -227,14 +228,33 @@ router.put("/:id", protect, adminOnly, async (req, res) => {
     }
 
     const updatedProduct = await product.save();
-    res.json(updatedProduct);
+
+    // Send a low-stock alert after a successful stock update.
+    if (
+      fields.includes("stockQuantity") &&
+      updatedProduct.stockQuantity <= updatedProduct.lowStockThreshold
+    ) {
+      try {
+        await sendLowStockAlert(updatedProduct);
+        console.log(`Low-stock alert sent for ${updatedProduct.name}`);
+      } catch (emailError) {
+        console.error(
+          `Low-stock email failed for ${updatedProduct.name}:`,
+          emailError.message
+        );
+      }
+    }
+
+    return res.json(updatedProduct);
   } catch (error) {
     console.error("Product update failed:", error.message);
-    res.status(400).json({
+    return res.status(400).json({
       message: "Failed to update product. Check the supplied values."
     });
   }
 });
+
+
 
 // DELETE /api/products/:id
 router.delete("/:id", protect, adminOnly, async (req, res) => {

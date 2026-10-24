@@ -243,7 +243,6 @@ function CustomerProducts({ customerToken, customerUser, onSignIn }) {
       onChange={(event) => setSearch(event.target.value)}
       aria-label="Search products"
     />
-    
     <button
   type="button"
   className="clear-filters-btn"
