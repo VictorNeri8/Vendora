@@ -21,9 +21,16 @@ function ProductForm({ product, onSave, onCancel, saving }) {
     setStockQuantity(product?.stockQuantity ?? 0);
     setLowStockThreshold(product?.lowStockThreshold ?? 5);
     setImageFile(null);
-    setImagePreview(
-      product?.image ? `http://localhost:5000${product.image}` : ""
-    );
+
+   setImagePreview(
+  product?.image
+    ? product.image.startsWith("http")
+      ? product.image
+      : `http://localhost:5000${product.image}`
+    : ""
+);
+
+
   }, [product]);
 
   const handleImageChange = (event) => {

@@ -287,26 +287,6 @@
 
 
 
-.shop-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  margin: 24px 0;
-  padding: 18px 20px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
-}
-
-.shop-toolbar-heading {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  flex-shrink: 0;
-}
-
 .shop-results-label {
   color: #111827;
   font-size: 16px;
@@ -318,179 +298,6 @@
   font-size: 13px;
 }
 
-.shop-toolbar-filters {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.shop-filter-group {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-   margin-bottom: 20px;
-  
-}
-
-.shop-filter-group label {
-  color: #6b7280;
-  font-size: 13px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.shop-filter-group select {
-  min-width: 145px;
-  padding: 11px 34px 11px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 9px;
-  background: #ffffff;
-  color: #111827;
-  font-size: 13px;
-  cursor: pointer;
-  outline: none;
-}
-
-.shop-filter-group select:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-}
-
-@media (max-width: 760px) {
-  .shop-toolbar {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 16px;
-    padding: 16px;
-  }
-
-  .shop-toolbar-filters {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
-
-  .shop-filter-group {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 7px;
-    min-width: 0;
-  }
-
-  .shop-filter-group select {
-    width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-  }
-}
-
-@media (max-width: 420px) {
-  .shop-toolbar-filters {
-    grid-template-columns: 1fr;
-  }
-}
-
-
-.shop-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin: 24px 0;
-  padding: 16px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
-}
-
-.shop-search-inline {
-  flex: 1;
-  min-width: 160px;
-  margin: 0;
-}
-
-.shop-search-inline input {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.shop-toolbar .shop-filter-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.shop-toolbar .shop-filter-group label {
-  color: #6b7280;
-  font-size: 13px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.shop-toolbar .shop-filter-group select {
-  min-width: 135px;
-  max-width: 190px;
-  padding: 11px 30px 11px 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 9px;
-  background: #ffffff;
-  color: #111827;
-  font-size: 13px;
-}
-
-@media (max-width: 760px) {
-  .shop-toolbar {
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .shop-search-inline {
-    flex-basis: 100%;
-  }
-
-  .shop-toolbar .shop-filter-group {
-    flex: 1;
-    min-width: 0;
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .shop-toolbar .shop-filter-group select {
-    width: 100%;
-    max-width: none;
-    box-sizing: border-box;
-  }
-}
-
-.shop-toolbar {
-  align-items: center;
-}
-
-.shop-toolbar .shop-search-inline {
-  display: flex;
-  align-items: center;
-  align-self: center;
-  margin: 0;
-  padding: 0;
-}
-
-.shop-toolbar .shop-search-inline input {
-  display: block;
-  height: 42px;
-  margin: 0;
-  transform: none;
-  box-sizing: border-box;
-}
-
-.shop-toolbar .shop-filter-group {
-  align-self: center;
-}
-
-.shop-toolbar .shop-filter-group select {
-  height: 42px;
-  box-sizing: border-box;
-}
 
 .clear-filters-btn {
   padding: 10px 14px;
@@ -508,4 +315,167 @@
 
 .clear-filters-btn:hover {
   background: #f3f4f6;
+}
+
+
+/* Customer storefront toolbar layout */
+.shop-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 28px;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #e5eaf0;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+}
+
+.shop-search-inline {
+   display: flex;
+  align-items: center;
+  align-self: center;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.shop-search-inline input {
+    display: block;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+  height: 42px;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.clear-filters-btn {
+   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  flex-shrink: 0;
+  height: 42px;
+  margin: 0;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172033;
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.shop-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 145px;
+}
+
+.shop-filter-group label {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.shop-filter-group select {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172033;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .customer-shop {
+    padding: 20px 16px;
+  }
+
+  .shop-header {
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .shop-header h1 {
+    font-size: 24px;
+    line-height: 1.25;
+  }
+
+  .cart-summary {
+    flex-shrink: 0;
+    gap: 5px;
+    margin-left: auto;
+    font-size: 13px;
+    text-align: right;
+  }
+
+  .shop-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+ 
+  .shop-search-inline {
+    width: 100%;
+  }
+
+  .shop-search-inline input {
+    min-width: 0;
+    font-size: 14px;
+  }
+
+  .clear-filters-btn {
+    padding: 12px 10px;
+    font-size: 13px;
+  }
+
+  .shop-filter-group {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .shop-filter-group select {
+    max-width: none;
+  }
+}
+
+
+@media (max-width: 600px) {
+  .shop-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .shop-header > div:first-child {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .shop-header h1 {
+    text-align: left;
+    margin: 0;
+  }
+
+  .cart-summary {
+    flex: 0 0 auto;
+    margin-left: auto;
+    align-items: flex-end;
+    text-align: right;
+  }
 }

@@ -21,6 +21,7 @@ const [selectedStockStatus, setSelectedStockStatus] = useState("All");
 const [currentPage, setCurrentPage] = useState(1);
 const productsPerPage = 10;
 const [activeSection, setActiveSection] = useState("Dashboard");
+const [sidebarOpen, setSidebarOpen] = useState(false);
 
 
 
@@ -278,7 +279,17 @@ useEffect(() => {
 
   return (
     <div className="dashboard">
-      <aside className="sidebar">
+      <button
+  type="button"
+  className="sidebar-toggle"
+  aria-label="Toggle sidebar"
+  onClick={() => setSidebarOpen((open) => !open)}
+>
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
+      <aside className={`sidebar ${sidebarOpen ? "sidebar-open" : ""}`}>
         <div className="sidebar-brand">
           <span className="brand-mark">V</span>
           <span>Vendora</span>
@@ -290,7 +301,10 @@ useEffect(() => {
   className={`sidebar-item ${
     activeSection === "Dashboard" ? "active" : ""
   }`}
-  onClick={() => setActiveSection("Dashboard")}
+  onClick={() => {
+    setActiveSection("Dashboard");
+    setSidebarOpen(false);
+  }}
 >
   Dashboard
 </div>
@@ -299,7 +313,10 @@ useEffect(() => {
   className={`sidebar-item ${
     activeSection === "Inventory & Reports" ? "active" : ""
   }`}
-  onClick={() => setActiveSection("Inventory & Reports")}
+  onClick={() => {
+    setActiveSection("Inventory & Reports");
+    setSidebarOpen(false);
+  }}
 >
   Inventory & Reports
 </div>
@@ -308,15 +325,25 @@ useEffect(() => {
   className={`sidebar-item ${
     activeSection === "Orders" ? "active" : ""
   }`}
-  onClick={() => setActiveSection("Orders")}
+  onClick={() => {
+    setActiveSection("Orders");
+    setSidebarOpen(false);
+  }}
 >
   Orders
 </div>
 
-        <button className="logout-button" onClick={onLogout}>
-          Sign out
-        </button>
-      </aside>
+<button
+  className="logout-button"
+  onClick={() => {
+    setSidebarOpen(false);
+    onLogout();
+  }}
+>
+  Sign out
+</button>
+</aside>
+
 
       <main className="dashboard-main">
         <header className="dashboard-header">

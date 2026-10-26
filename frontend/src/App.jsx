@@ -22,6 +22,7 @@ function App() {
   });
 
   const [page, setPage] = useState("store");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -128,10 +129,32 @@ function App() {
 
 
         
-<nav className="store-navigation">
-  <strong className="store-brand">Vendora</strong>
 
-  <div className="store-nav-actions">
+<nav className="store-navigation">
+
+  <strong className="store-brand">
+  <img
+    src="/vendora-v-icon.svg"
+    alt=""
+    className="store-brand-logo"
+  />
+  <span>Vendora</span>
+</strong>
+
+  <button
+    type="button"
+    className="mobile-menu-toggle"
+    aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+    aria-expanded={mobileMenuOpen}
+    onClick={() => setMobileMenuOpen((open) => !open)}
+  >
+    {mobileMenuOpen ? "✕" : "☰"}
+  </button>
+
+  <div className={`store-nav-actions ${mobileMenuOpen ? "mobile-menu-open" : ""}`}>
+
+
+
     {customerUser?.role === "customer" ? (
       <>
         <button

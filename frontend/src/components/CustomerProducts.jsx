@@ -257,7 +257,7 @@ function CustomerProducts({ customerToken, customerUser, onSignIn }) {
   </div>
 
   <div className="shop-filter-group">
-    <label htmlFor="product-category">Category</label>
+   {/*  <label htmlFor="product-category">Category</label> */}
     <select
       id="product-category"
       value={selectedCategory}
@@ -273,7 +273,7 @@ function CustomerProducts({ customerToken, customerUser, onSignIn }) {
   </div>
 
   <div className="shop-filter-group">
-    <label htmlFor="product-sort">Sort by</label>
+   {/*  <label htmlFor="product-sort">Sort by</label> */}
     <select
       id="product-sort"
       value={sortBy}
@@ -288,39 +288,6 @@ function CustomerProducts({ customerToken, customerUser, onSignIn }) {
 </div>
 
 
-  <div className="shop-toolbar-filters">
-    <div className="shop-filter-group">
-      <label htmlFor="product-category">Category</label>
-      <select
-        id="product-category"
-        value={selectedCategory}
-        onChange={(event) =>
-          setSelectedCategory(event.target.value)
-        }
-      >
-        <option value="all">All Categories</option>
-        {categories.map((category) => (
-          <option key={category} value={category}>
-            {category}
-          </option>
-        ))}
-      </select>
-    </div>
-
-    <div className="shop-filter-group">
-      <label htmlFor="product-sort">Sort by</label>
-      <select
-        id="product-sort"
-        value={sortBy}
-        onChange={(event) => setSortBy(event.target.value)}
-      >
-        <option value="default">Recommended</option>
-        <option value="name-asc">Name: A–Z</option>
-        <option value="price-asc">Price: Low to High</option>
-        <option value="price-desc">Price: High to Low</option>
-      </select>
-    </div>
-  </div>
 
 
 
@@ -357,11 +324,19 @@ function CustomerProducts({ customerToken, customerUser, onSignIn }) {
               >
                 <div className="product-placeholder">
                   {product.image ? (
-                    <img
-                      src={`http://localhost:5000${product.image}`}
-                      alt={product.name}
-                      className="customer-product-image"
-                    />
+                   
+                   
+<img
+  src={
+    product.image?.startsWith("http")
+      ? product.image
+      : `http://localhost:5000${product.image}`
+  }
+  alt={product.name}
+  className="customer-product-image"
+/>
+
+
                   ) : (
                     product.name?.charAt(0)?.toUpperCase() || "P"
                   )}

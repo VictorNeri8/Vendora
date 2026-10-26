@@ -4,7 +4,8 @@ const Product = require("../models/Product");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 const upload = require("../middleware/uploadMiddleware");
 const { sendLowStockAlert } = require("../services/emailService");
-
+const supabase = require("../config/supabase");
+const crypto = require("crypto");
 
 const router = express.Router();
 
@@ -148,8 +149,9 @@ router.post("/", protect, adminOnly, async (req, res) => {
 });
 
 
+
 /* POST /api/products/:id/image
-   Upload or replace a product image */
+   Upload or replace a product image using Supabase Storage */
 router.post(
   "/:id/image",
   protect,
@@ -173,22 +175,71 @@ router.post(
         return res.status(404).json({ message: "Product not found" });
       }
 
-      product.image = `/uploads/products/${req.file.filename}`;
+      const extensions = {
+        "image/jpeg": "jpg",
+        "image/png": "png",
+        "image/webp": "webp"
+      };
 
-      const updatedProduct = await product.save();
+      const extension = extensions[req.file.mimetype];
 
-      res.json({
-        message: "Product image uploaded successfully",
-        product: updatedProduct
-      });
+      if (!extension) {
+        return res.status(400).json({
+          message: "Only JPG, PNG, and WEBP images are allowed."
+        });
+      }
+
+      const fileName = `${crypto.randomUUID()}.${extension}`;
+      const filePath = `${product._id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("product-images")
+        .upload(filePath, req.file.buffer, {
+          contentType: req.file.mimetype,
+          upsert: false
+        });
+
+      if (uploadError) {
+        console.error("Supabase upload failed:", uploadError.message);
+        return res.status(500).json({
+          message: "Failed to upload product image"
+        });
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from("product-images")
+        .getPublicUrl(filePath);
+
+      product.image = publicUrlData.publicUrl;
+
+      try {
+        const updatedProduct = await product.save();
+
+        return res.json({
+          message: "Product image uploaded successfully",
+          product: updatedProduct
+        });
+      } catch (saveError) {
+        await supabase.storage
+          .from("product-images")
+          .remove([filePath]);
+
+        throw saveError;
+      }
     } catch (error) {
       console.error("Product image upload failed:", error.message);
-      res.status(500).json({
+      return res.status(500).json({
         message: "Failed to upload product image"
       });
     }
   }
 );
+
+
+
+
+
+
 
 
 // PUT /api/products/:id

@@ -5,6 +5,29 @@
   background: #f4f6fa;
 }
 
+.sidebar .sidebar-brand {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  line-height: 1;
+}
+
+.sidebar .sidebar-brand .brand-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin: 0;
+  line-height: 1;
+}
+
+.sidebar .sidebar-brand > span:last-child {
+  display: block;
+  margin: 0;
+  line-height: 1.2;
+}
+
 .sidebar {
   width: 245px;
   flex-shrink: 0;
@@ -53,6 +76,87 @@
 .sidebar-item.active {
   background: #2a3e60;
   color: white;
+}
+@media (max-width: 768px) {
+  .sidebar .sidebar-brand {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start;
+    gap: 8px;
+    font-size: 21px;
+    line-height: normal;
+  }
+
+  .sidebar .sidebar-brand .brand-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    flex: 0 0 32px;
+  }
+
+  .sidebar .sidebar-brand > span:last-child {
+    display: block;
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
+  }
+}
+
+
+.sidebar-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 42px;
+  height: 42px;
+  padding: 9px;
+  border: 1px solid #2857DB;
+  border-radius: 8px;
+  background: #2857DB;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.sidebar-toggle span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #fff;
+  border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+  .sidebar-toggle {
+    display: flex;
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    left: auto;
+  }
+
+
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    overflow-y: auto;
+  }
+
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+  }
 }
 
 .logout-button {
@@ -707,6 +811,12 @@
 
 .orders-section .inventory-table td small {
   color: #64748b;
+}
+
+.orders-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 @media (max-width: 600px) {
