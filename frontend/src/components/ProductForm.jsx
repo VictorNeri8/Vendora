@@ -22,11 +22,11 @@ function ProductForm({ product, onSave, onCancel, saving }) {
     setLowStockThreshold(product?.lowStockThreshold ?? 5);
     setImageFile(null);
 
-   setImagePreview(
+setImagePreview(
   product?.image
     ? product.image.startsWith("http")
       ? product.image
-      : `http://localhost:5000${product.image}`
+      : `${import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "")}${product.image}`
     : ""
 );
 

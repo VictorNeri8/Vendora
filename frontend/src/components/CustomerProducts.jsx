@@ -330,7 +330,9 @@ function CustomerProducts({ customerToken, customerUser, onSignIn }) {
   src={
     product.image?.startsWith("http")
       ? product.image
-      : `http://localhost:5000${product.image}`
+      : product.image
+        ? `${(import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "")}${product.image}`
+        : ""
   }
   alt={product.name}
   className="customer-product-image"
