@@ -431,14 +431,20 @@ button:disabled {
 }
 
 .store-brand {
-  display: inline-flex;
+  display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
 }
 
 .store-brand-logo {
-   width: 44px;
+  width: 44px;
   height: 44px;
   object-fit: contain;
   flex-shrink: 0;
+}
+
+.store-brand span {
+  display: inline-block;
 }
