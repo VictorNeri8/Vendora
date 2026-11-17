@@ -8,6 +8,8 @@ function CustomerAuth({ onLogin, onClose }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -18,14 +20,27 @@ function CustomerAuth({ onLogin, onClose }) {
 
     try {
       if (mode === "register") {
-        await api.post("/auth/register", { name, email, password });
+        await api.post("/auth/register", {
+          name,
+          email,
+          password,
+          contactNumber,
+          deliveryAddress
+        });
+
         setMode("login");
         setPassword("");
+        setContactNumber("");
+        setDeliveryAddress("");
         setError("Account created! Please sign in.");
         return;
       }
 
-      const response = await api.post("/auth/login", { email, password });
+      const response = await api.post("/auth/login", {
+        email,
+        password
+      });
+
       const { token, user } = response.data;
 
       if (!token || !user || user.role !== "customer") {
@@ -53,7 +68,11 @@ function CustomerAuth({ onLogin, onClose }) {
         </div>
 
         <div className="customer-auth-heading">
-          <h1>{mode === "login" ? "Welcome back" : "Create your account"}</h1>
+          <h1>
+            {mode === "login"
+              ? "Welcome back"
+              : "Create your account"}
+          </h1>
           <p>
             {mode === "login"
               ? "Sign in to continue shopping."
@@ -63,19 +82,57 @@ function CustomerAuth({ onLogin, onClose }) {
 
         <form className="customer-auth-form" onSubmit={handleSubmit}>
           {mode === "register" && (
-            <div className="customer-auth-field">
-              <label htmlFor="customer-name">Full name</label>
-              <input
-                id="customer-name"
-                type="text"
-                placeholder="Enter your full name"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                required
-                maxLength={100}
-                autoComplete="name"
-              />
-            </div>
+            <>
+              <div className="customer-auth-field">
+                <label htmlFor="customer-name">Full name</label>
+                <input
+                  id="customer-name"
+                  type="text"
+                  placeholder="Enter your full name"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  required
+                  maxLength={100}
+                  autoComplete="name"
+                />
+              </div>
+
+              <div className="customer-auth-field">
+                <label htmlFor="customer-contact">
+                  Contact number
+                </label>
+                <input
+                  id="customer-contact"
+                  type="tel"
+                  placeholder="Enter your contact number"
+                  value={contactNumber}
+                  onChange={(event) =>
+                    setContactNumber(event.target.value)
+                  }
+                  required
+                  maxLength={20}
+                  autoComplete="tel"
+                />
+              </div>
+
+              <div className="customer-auth-field">
+                <label htmlFor="customer-address">
+                  Delivery address
+                </label>
+                <textarea
+                  id="customer-address"
+                  placeholder="House number, street, barangay, city, province"
+                  value={deliveryAddress}
+                  onChange={(event) =>
+                    setDeliveryAddress(event.target.value)
+                  }
+                  required
+                  maxLength={300}
+                  autoComplete="street-address"
+                  rows={3}
+                />
+              </div>
+            </>
           )}
 
           <div className="customer-auth-field">
@@ -102,7 +159,9 @@ function CustomerAuth({ onLogin, onClose }) {
               required
               minLength={8}
               autoComplete={
-                mode === "login" ? "current-password" : "new-password"
+                mode === "login"
+                  ? "current-password"
+                  : "new-password"
               }
             />
           </div>
@@ -127,7 +186,10 @@ function CustomerAuth({ onLogin, onClose }) {
         </form>
 
         <p className="customer-auth-switch">
-          {mode === "login" ? "Don't have an account?" : "Already have an account?"}
+          {mode === "login"
+            ? "Don't have an account?"
+            : "Already have an account?"}
+
           <button
             type="button"
             onClick={() => {

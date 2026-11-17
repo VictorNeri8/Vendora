@@ -9,18 +9,32 @@ const router = express.Router();
 // Register a new customer
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const {
+      name,
+      email,
+      password,
+      contactNumber,
+      deliveryAddress
+    } = req.body;
 
     if (
       typeof name !== "string" ||
       typeof email !== "string" ||
       typeof password !== "string" ||
+      typeof contactNumber !== "string" ||
+      typeof deliveryAddress !== "string" ||
       !name.trim() ||
       !email.trim() ||
-      password.length < 8
+      !contactNumber.trim() ||
+      !deliveryAddress.trim() ||
+      password.length < 8 ||
+      name.trim().length > 100 ||
+      contactNumber.trim().length > 20 ||
+      deliveryAddress.trim().length > 300
     ) {
       return res.status(400).json({
-        message: "Name, valid email, and password of at least 8 characters are required."
+        message:
+          "Name, valid email, contact number, delivery address, and password of at least 8 characters are required."
       });
     }
 
@@ -42,6 +56,8 @@ router.post("/register", async (req, res) => {
       name: name.trim(),
       email: normalizedEmail,
       password: hashedPassword,
+      contactNumber: contactNumber.trim(),
+      deliveryAddress: deliveryAddress.trim(),
       role: "customer"
     });
 
@@ -51,6 +67,8 @@ router.post("/register", async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        contactNumber: user.contactNumber,
+        deliveryAddress: user.deliveryAddress,
         role: user.role
       }
     });
@@ -114,6 +132,8 @@ router.post("/login", async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        contactNumber: user.contactNumber || "",
+        deliveryAddress: user.deliveryAddress || "",
         role: user.role
       }
     });
