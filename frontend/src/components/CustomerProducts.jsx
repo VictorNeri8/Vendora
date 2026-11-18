@@ -14,25 +14,21 @@ function CustomerProducts({
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("default");
-   const [cartMessage, setCartMessage] = useState("");
+  const [cartMessage, setCartMessage] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
+  const [cart, setCart] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("vendoraCart")) || [];
+    } catch {
+      return [];
+    }
+  });
 
-   const [selectedCategory, setSelectedCategory] = useState("all");
- const [cart, setCart] = useState(() => {
-  try {
-    return JSON.parse(localStorage.getItem("vendoraCart")) || [];
-  } catch {
-    return [];
-  }
-});
-
-
- 
   useEffect(() => {
-  localStorage.setItem("vendoraCart", JSON.stringify(cart));
-}, [cart]);
-
-
+    localStorage.setItem("vendoraCart", JSON.stringify(cart));
+    window.dispatchEvent(new Event("vendoraCartUpdated"));
+  }, [cart]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -41,6 +37,7 @@ function CustomerProducts({
         setError("");
 
         const response = await api.get("/products");
+
         setProducts(
           Array.isArray(response.data) ? response.data : []
         );
@@ -58,47 +55,43 @@ function CustomerProducts({
   }, []);
 
   const categories = [
-  ...new Set(
-    products
-      .map((product) => product.category?.trim())
-      .filter(Boolean)
-  )
-].sort((a, b) => a.localeCompare(b));
-
-
+    ...new Set(
+      products
+        .map((product) => product.category?.trim())
+        .filter(Boolean)
+    )
+  ].sort((a, b) => a.localeCompare(b));
 
   const filteredProducts = products
-  .filter((product) => {
-    const term = search.trim().toLowerCase();
+    .filter((product) => {
+      const term = search.trim().toLowerCase();
 
-    const matchesSearch =
-      product.name?.toLowerCase().includes(term) ||
-      product.description?.toLowerCase().includes(term) ||
-      product.category?.toLowerCase().includes(term);
+      const matchesSearch =
+        product.name?.toLowerCase().includes(term) ||
+        product.description?.toLowerCase().includes(term) ||
+        product.category?.toLowerCase().includes(term);
 
-    const matchesCategory =
-      selectedCategory === "all" ||
-      product.category?.trim() === selectedCategory;
+      const matchesCategory =
+        selectedCategory === "all" ||
+        product.category?.trim() === selectedCategory;
 
-    return matchesSearch && matchesCategory;
-  })
-  .sort((a, b) => {
-    if (sortBy === "name-asc") {
-      return (a.name || "").localeCompare(b.name || "");
-    }
+      return matchesSearch && matchesCategory;
+    })
+    .sort((a, b) => {
+      if (sortBy === "name-asc") {
+        return (a.name || "").localeCompare(b.name || "");
+      }
 
-    if (sortBy === "price-asc") {
-      return Number(a.price) - Number(b.price);
-    }
+      if (sortBy === "price-asc") {
+        return Number(a.price) - Number(b.price);
+      }
 
-    if (sortBy === "price-desc") {
-      return Number(b.price) - Number(a.price);
-    }
+      if (sortBy === "price-desc") {
+        return Number(b.price) - Number(a.price);
+      }
 
-    return 0;
-  });
-
-
+      return 0;
+    });
 
   const addToCart = (product) => {
     setCartMessage("");
@@ -116,6 +109,7 @@ function CustomerProducts({
         setCartMessage(
           `Only ${product.stockQuantity} unit(s) of ${product.name} are available.`
         );
+
         return currentCart;
       }
 
@@ -147,6 +141,7 @@ function CustomerProducts({
             setCartMessage(
               `Only ${item.stockQuantity} unit(s) are available for ${item.name}.`
             );
+
             return item;
           }
 
@@ -156,115 +151,74 @@ function CustomerProducts({
     );
   };
 
-  const cartCount = cart.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
-
-  const cartTotal = cart.reduce(
-    (total, item) =>
-      total + Number(item.price) * item.quantity,
-    0
-  );
-
   const formatPrice = (price) =>
     Number(price).toLocaleString("en-PH", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     });
 
-
-
-
-   const handleCheckout = () => {
-  if (!customerToken) {
-    setCartMessage("Please sign in before checking out.");
-    if (onSignIn) onSignIn();
-    return;
-  }
-
-  if (cart.length === 0) {
-    setCartMessage("Your cart is empty.");
-    return;
-  }
-
-  setCartMessage("");
-  if (onCheckout) onCheckout(cart);
-};
-
-
-
-
   return (
     <main className="customer-shop">
       <header className="shop-header">
         <div>
           <h1>Vendora Store</h1>
-       
-        </div>
-
-        <div className="cart-summary">
-          <span>🛒 Cart: {cartCount}</span>
-          <strong>₱{formatPrice(cartTotal)}</strong>
         </div>
       </header>
 
-<div className="shop-toolbar">
-  <div className="shop-search shop-search-inline">
-    <input
-      type="search"
-      placeholder="Search products..."
-      value={search}
-      onChange={(event) => setSearch(event.target.value)}
-      aria-label="Search products"
-    />
-    <button
-  type="button"
-  className="clear-filters-btn"
-  onClick={() => {
-    setSearch("");
-    setSelectedCategory("all");
-    setSortBy("default");
-  }}
->
-  Clear Filters
-</button>
-  </div>
+      <div className="shop-toolbar">
+        <div className="shop-search shop-search-inline">
+          <input
+            type="search"
+            placeholder="Search products..."
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            aria-label="Search products"
+          />
 
-  <div className="shop-filter-group">
-   {/*  <label htmlFor="product-category">Category</label> */}
-    <select
-      id="product-category"
-      value={selectedCategory}
-      onChange={(event) => setSelectedCategory(event.target.value)}
-    >
-      <option value="all">All Categories</option>
-      {categories.map((category) => (
-        <option key={category} value={category}>
-          {category}
-        </option>
-      ))}
-    </select>
-  </div>
+          <button
+            type="button"
+            className="clear-filters-btn"
+            onClick={() => {
+              setSearch("");
+              setSelectedCategory("all");
+              setSortBy("default");
+            }}
+          >
+            Clear Filters
+          </button>
+        </div>
 
-  <div className="shop-filter-group">
-   {/*  <label htmlFor="product-sort">Sort by</label> */}
-    <select
-      id="product-sort"
-      value={sortBy}
-      onChange={(event) => setSortBy(event.target.value)}
-    >
-      <option value="default">Recommended</option>
-      <option value="name-asc">Name: A–Z</option>
-      <option value="price-asc">Price: Low to High</option>
-      <option value="price-desc">Price: High to Low</option>
-    </select>
-  </div>
-</div>
+        <div className="shop-filter-group">
+          <select
+            id="product-category"
+            value={selectedCategory}
+            onChange={(event) =>
+              setSelectedCategory(event.target.value)
+            }
+          >
+            <option value="all">All Categories</option>
 
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </div>
 
-
-
+        <div className="shop-filter-group">
+          <select
+            id="product-sort"
+            value={sortBy}
+            onChange={(event) => setSortBy(event.target.value)}
+          >
+            <option value="default">Recommended</option>
+            <option value="name-asc">Name: A–Z</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
 
       {cartMessage && (
         <p className="cart-message" role="status">
@@ -299,21 +253,18 @@ function CustomerProducts({
               >
                 <div className="product-placeholder">
                   {product.image ? (
-                   
-                   
-<img
-  src={
-    product.image?.startsWith("http")
-      ? product.image
-      : product.image
-        ? `${(import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "")}${product.image}`
-        : ""
-  }
-  alt={product.name}
-  className="customer-product-image"
-/>
-
-
+                    <img
+                      src={
+                        product.image?.startsWith("http")
+                          ? product.image
+                          : `${(
+                              import.meta.env.VITE_API_URL ||
+                              "http://localhost:5000/api"
+                            ).replace(/\/api\/?$/, "")}${product.image}`
+                      }
+                      alt={product.name}
+                      className="customer-product-image"
+                    />
                   ) : (
                     product.name?.charAt(0)?.toUpperCase() || "P"
                   )}
@@ -332,24 +283,25 @@ function CustomerProducts({
                   </p>
 
                   <div className="product-card-footer">
-                    <strong>₱{formatPrice(product.price)}</strong>
+                    <strong>
+                      ₱{formatPrice(product.price)}
+                    </strong>
 
                     <span
-  className={
-    stock === 0
-      ? "stock-unavailable"
-      : stock <= 5
-        ? "stock-low"
-        : "stock-available"
-  }
->
-  {stock === 0
-    ? "Out of stock"
-    : stock <= 5
-      ? `Only ${stock} left`
-      : `${stock} in stock`}
-</span>
-
+                      className={
+                        stock === 0
+                          ? "stock-unavailable"
+                          : stock <= 5
+                            ? "stock-low"
+                            : "stock-available"
+                      }
+                    >
+                      {stock === 0
+                        ? "Out of stock"
+                        : stock <= 5
+                          ? `Only ${stock} left`
+                          : `${stock} in stock`}
+                    </span>
                   </div>
 
                   {quantityInCart > 0 && (
@@ -391,79 +343,6 @@ function CustomerProducts({
               </article>
             );
           })}
-        </section>
-      )}
-
-      {cart.length > 0 && (
-        <section className="cart-panel">
-          <h2>Your Shopping Cart</h2>
-
-          {cart.map((item) => (
-            <div className="cart-item" key={item._id}>
-              <div>
-                <strong>{item.name}</strong>
-                <p>
-                  ₱{formatPrice(item.price)} × {item.quantity}
-                </p>
-              </div>
-
-              <div className="cart-item-actions">
-                <button
-                  type="button"
-                  onClick={() => changeQuantity(item._id, -1)}
-                  aria-label={`Remove one ${item.name}`}
-                >
-                  −
-                </button>
-
-                <span>{item.quantity}</span>
-
-                <button
-                  type="button"
-                  onClick={() => changeQuantity(item._id, 1)}
-                  disabled={
-                    item.quantity >= Number(item.stockQuantity)
-                  }
-                  aria-label={`Add one ${item.name}`}
-                >
-                  +
-                </button>
-
-                <button
-                  type="button"
-                  className="remove-cart-item"
-                  onClick={() =>
-                    setCart((currentCart) =>
-                      currentCart.filter(
-                        (cartProduct) =>
-                          cartProduct._id !== item._id
-                      )
-                    )
-                  }
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
-
-          <div className="cart-total">
-            <strong>Total</strong>
-            <strong>₱{formatPrice(cartTotal)}</strong>
-          </div>
-
-          
-  <button
-    type="button"
-    className="checkout-button"
-    onClick={handleCheckout}
-  >
-    Proceed to Checkout
-  </button>
-
-
-
-
         </section>
       )}
     </main>

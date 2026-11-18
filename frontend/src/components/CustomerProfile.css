@@ -1,84 +1,209 @@
 
+/* ========================================
+   VENDORA CUSTOMER PROFILE
+======================================== */
+
 .customer-profile-page {
-  min-height: 70vh;
+  min-height: calc(100vh - 70px);
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding: 48px 20px;
-  background: #f8fafc;
+  box-sizing: border-box;
+  background: #f7f7f8;
 }
 
 .customer-profile-card {
   width: 100%;
-  max-width: 480px;
-  padding: 32px;
+  max-width: 520px;
+  padding: 36px;
   box-sizing: border-box;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
+  border: 1px solid #e9ebef;
+  border-radius: 14px;
   background: #ffffff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 8px 30px rgba(20, 25, 35, 0.045);
 }
 
+/* Profile avatar */
+
 .customer-profile-avatar {
-  width: 64px;
-  height: 64px;
+  width: 62px;
+  height: 62px;
   display: grid;
   place-items: center;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   border-radius: 50%;
-  background: #dbeafe;
-  color: #1d4ed8;
-  font-size: 26px;
+  background: #20242c;
+  color: #ffffff;
+  font-size: 25px;
   font-weight: 700;
 }
 
+/* Heading */
+
 .customer-profile-card h1 {
   margin: 0 0 8px;
-  color: #111827;
+  color: #20242c;
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
 }
 
 .customer-profile-subtitle {
-  margin-bottom: 28px;
-  color: #6b7280;
+  margin: 0 0 28px;
+  color: #777e89;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Form fields */
+
+.customer-profile-card form {
+  display: flex;
+  flex-direction: column;
 }
 
 .customer-profile-field {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 8px;
   padding: 16px 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #edf0f2;
   overflow-wrap: anywhere;
 }
 
+.customer-profile-field label,
 .customer-profile-field span {
-  color: #6b7280;
+  color: #555c68;
   font-size: 13px;
+  font-weight: 600;
+}
+
+.customer-profile-field input,
+.customer-profile-field textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 13px;
+  box-sizing: border-box;
+  border: 1px solid #e0e3e8;
+  border-radius: 8px;
+  outline: none;
+  background: #ffffff;
+  color: #20242c;
+  font-family: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.customer-profile-field input:focus,
+.customer-profile-field textarea:focus {
+  border-color: #454b57;
+  box-shadow: 0 0 0 3px rgba(69, 75, 87, 0.09);
+}
+
+.customer-profile-field textarea {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.5;
 }
 
 .customer-profile-field strong {
-  color: #111827;
-  font-size: 15px;
+  color: #20242c;
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.customer-profile-card > button {
+/* Feedback messages */
+
+.customer-profile-error,
+.customer-profile-success {
+  margin: 18px 0 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.customer-profile-error {
+  border: 1px solid #f0dada;
+  background: #fcf2f2;
+  color: #a83d3d;
+}
+
+.customer-profile-success {
+  border: 1px solid #dcefe1;
+  background: #f0f8f2;
+  color: #28663c;
+}
+
+/* Save button */
+
+.customer-profile-card form button {
   width: 100%;
+  min-height: 46px;
   margin-top: 24px;
   padding: 12px;
-  border: none;
-  border-radius: 9px;
-  background: #2563eb;
+  border: 1px solid #20242c;
+  border-radius: 8px;
+  background: #20242c;
   color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
-.customer-profile-card > button:hover {
-  background: #1d4ed8;
+.customer-profile-card form button:hover:not(:disabled) {
+  border-color: #3b414d;
+  background: #3b414d;
 }
+
+.customer-profile-card form button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Back to store */
+
+.customer-profile-back {
+  width: 100%;
+  min-height: 43px;
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid #e0e3e8;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #555c68;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.customer-profile-back:hover {
+  background: #f4f5f6;
+}
+
+/* Responsive */
 
 @media (max-width: 480px) {
+  .customer-profile-page {
+    padding: 28px 14px;
+  }
+
   .customer-profile-card {
-    padding: 24px;
+    padding: 25px 21px;
+    border-radius: 12px;
+  }
+
+  .customer-profile-card h1 {
+    font-size: 24px;
+  }
+
+  .customer-profile-subtitle {
+    font-size: 13px;
   }
 }

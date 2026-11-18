@@ -2,7 +2,9 @@
 import { useState } from "react";
 import api from "./services/api";
 import Dashboard from "./components/Dashboard";
+import CustomerNavbar from "./components/CustomerNavbar";
 import CustomerProducts from "./components/CustomerProducts";
+import CustomerCart from "./components/CustomerCart";
 import CustomerAuth from "./components/CustomerAuth";
 import CustomerOrders from "./components/CustomerOrders";
 import CustomerProfile from "./components/CustomerProfile";
@@ -24,8 +26,6 @@ function App() {
   });
 
   const [page, setPage] = useState("store");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -110,6 +110,8 @@ function App() {
     sessionStorage.removeItem("vendoraCustomerUser");
     localStorage.removeItem("vendoraCart");
 
+    window.dispatchEvent(new Event("vendoraCartUpdated"));
+
     setCustomerToken(null);
     setCustomerUser(null);
     setCheckoutCart([]);
@@ -135,6 +137,9 @@ function App() {
     setPlacedOrder(order);
     setCheckoutCart([]);
     localStorage.removeItem("vendoraCart");
+
+    window.dispatchEvent(new Event("vendoraCartUpdated"));
+
     setPage("order-confirmation");
   };
 
@@ -144,145 +149,28 @@ function App() {
     setPage("store");
   };
 
+  const handleAdminLogin = () => {
+    setError("");
+    setPage("admin");
+  };
+
+  const renderCustomerNavbar = () => (
+    <CustomerNavbar
+      customerUser={customerUser}
+      onNavigate={setPage}
+      onLogout={handleCustomerLogout}
+      onAdminLogin={handleAdminLogin}
+    />
+  );
+
   if (token && user?.role === "admin") {
     return <Dashboard user={user} onLogout={handleLogout} />;
   }
 
   if (page === "store") {
     return (
-
-
-
       <div>
-        <nav className="store-navigation">
-          <strong className="store-brand">
-            <img
-              src="/vendora-v-icon.svg"
-              alt=""
-              className="store-brand-logo"
-            />
-            <span>Vendora</span>
-          </strong>
-
-          <button
-            type="button"
-            className="mobile-menu-toggle"
-            aria-label={
-              mobileMenuOpen
-                ? "Close navigation menu"
-                : "Open navigation menu"
-            }
-            aria-expanded={mobileMenuOpen}
-            onClick={() => setMobileMenuOpen((open) => !open)}
-          >
-            {mobileMenuOpen ? "✕" : "☰"}
-          </button>
-
-
-
-          
-<div
-  className={`store-nav-actions ${
-    mobileMenuOpen ? "mobile-menu-open" : ""
-  }`}
->
-  <div className="profile-menu-wrapper">
-    <button
-      type="button"
-      className="profile-icon-button"
-      aria-label="Open profile menu"
-      aria-expanded={profileMenuOpen}
-      onClick={() => setProfileMenuOpen((open) => !open)}
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="22"
-        height="22"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="12" cy="8" r="4" />
-        <path d="M5 21a7 7 0 0 1 14 0" />
-      </svg>
-    </button>
-
-    {profileMenuOpen && (
-      <div className="profile-dropdown">
-        {customerUser?.role === "customer" ? (
-          <>
-            <div className="profile-dropdown-header">
-              <strong>{customerUser.name}</strong>
-              <span>{customerUser.email}</span>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                setProfileMenuOpen(false);
-                setPage("customer-orders");
-              }}
-            >
-              Order History
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setProfileMenuOpen(false);
-                setPage("customer-profile");
-              }}
-            >
-              My Profile
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setProfileMenuOpen(false);
-                handleCustomerLogout();
-              }}
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <button
-            type="button"
-            onClick={() => {
-              setProfileMenuOpen(false);
-              setPage("customer-auth");
-            }}
-          >
-            Sign In
-          </button>
-        )}
-
-        <div className="profile-dropdown-divider" />
-
-        <button
-          type="button"
-          onClick={() => {
-            setProfileMenuOpen(false);
-            setError("");
-            setPage("admin");
-          }}
-        >
-          Admin Login
-        </button>
-      </div>
-    )}
-  </div>
-</div>
-
-
-
-
-
-        </nav>
+        {renderCustomerNavbar()}
 
         <CustomerProducts
           customerToken={
@@ -295,21 +183,39 @@ function App() {
           onCheckout={handleStartCheckout}
         />
       </div>
+    );
+  }
 
+  if (page === "customer-cart") {
+    return (
+      <div>
+        {renderCustomerNavbar()}
 
-
+        <CustomerCart
+          customerToken={
+            customerUser?.role === "customer" ? customerToken : null
+          }
+          onSignIn={() => setPage("customer-auth")}
+          onCheckout={handleStartCheckout}
+          onContinueShopping={() => setPage("store")}
+        />
+      </div>
     );
   }
 
   if (page === "checkout") {
     return (
-      <Checkout
-        cart={checkoutCart}
-        customerToken={customerToken}
-        customerUser={customerUser}
-        onBack={() => setPage("store")}
-        onOrderPlaced={handleOrderPlaced}
-      />
+      <div>
+        {renderCustomerNavbar()}
+
+        <Checkout
+          cart={checkoutCart}
+          customerToken={customerToken}
+          customerUser={customerUser}
+          onBack={() => setPage("customer-cart")}
+          onOrderPlaced={handleOrderPlaced}
+        />
+      </div>
     );
   }
 
@@ -334,12 +240,7 @@ function App() {
   if (page === "customer-orders") {
     return (
       <div>
-        <nav className="store-navigation">
-          <strong>Vendora</strong>
-          <button onClick={() => setPage("store")}>
-            Back to Store
-          </button>
-        </nav>
+        {renderCustomerNavbar()}
 
         <CustomerOrders
           customerToken={customerToken}
@@ -352,30 +253,20 @@ function App() {
   if (page === "customer-profile") {
     return (
       <div>
-        <nav className="store-navigation">
-          <strong className="store-brand">Vendora</strong>
-
-          <button
-            type="button"
-            className="nav-text-button"
-            onClick={() => setPage("store")}
-          >
-            Back to Store
-          </button>
-        </nav>
+        {renderCustomerNavbar()}
 
         <CustomerProfile
-  customerUser={customerUser}
-  onBack={() => setPage("store")}
-  onProfileUpdated={(updatedUser) => {
-    setCustomerUser(updatedUser);
+          customerUser={customerUser}
+          onBack={() => setPage("store")}
+          onProfileUpdated={(updatedUser) => {
+            setCustomerUser(updatedUser);
 
-    sessionStorage.setItem(
-      "vendoraCustomerUser",
-      JSON.stringify(updatedUser)
-    );
-  }}
-/>
+            sessionStorage.setItem(
+              "vendoraCustomerUser",
+              JSON.stringify(updatedUser)
+            );
+          }}
+        />
       </div>
     );
   }
