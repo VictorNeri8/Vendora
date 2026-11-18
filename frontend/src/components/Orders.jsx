@@ -29,9 +29,12 @@ const filteredOrders = orders.filter((order) => {
   const search = searchTerm.toLowerCase();
 
   const matchesSearch =
-    (order.customer?.name || "").toLowerCase().includes(search) ||
-    (order.customer?.email || "").toLowerCase().includes(search) ||
-    order._id.toLowerCase().includes(search);
+  (order.customerName || order.customer?.name || "")
+    .toLowerCase().includes(search) ||
+  (order.customerEmail || order.customer?.email || "")
+    .toLowerCase().includes(search) ||
+  (order.contactNumber || "").toLowerCase().includes(search) ||
+  order._id.toLowerCase().includes(search);
 
   const matchesStatus =
     statusFilter === "all" || order.status === statusFilter;
@@ -346,29 +349,57 @@ const cancelOrder = async () => {
         </button>
       </div>
 
-      <div className="order-details-info">
-        <p>
-          <strong>Customer:</strong>{" "}
-          {selectedOrder.customer?.name || "Unknown customer"}
-        </p>
+     <div className="order-details-info">
+  <h3>Customer Information</h3>
 
-        <p>
-          <strong>Email:</strong>{" "}
-          {selectedOrder.customer?.email || "—"}
-        </p>
+  <p>
+    <strong>Full Name:</strong>{" "}
+    {selectedOrder.customerName ||
+      selectedOrder.customer?.name ||
+      "Unknown customer"}
+  </p>
 
-        <p>
-          <strong>Order Date:</strong>{" "}
-          {formatDate(selectedOrder.createdAt)}
-        </p>
+  <p>
+    <strong>Email Address:</strong>{" "}
+    {selectedOrder.customerEmail ||
+      selectedOrder.customer?.email ||
+      "—"}
+  </p>
 
-        <p>
-          <strong>Status:</strong>{" "}
-          <span className="order-status-badge">
-            {selectedOrder.status || "Unknown"}
-          </span>
-        </p>
-      </div>
+  <p>
+    <strong>Contact Number:</strong>{" "}
+    {selectedOrder.contactNumber || "—"}
+  </p>
+
+  <p>
+    <strong>Delivery Address:</strong>{" "}
+    {selectedOrder.deliveryAddress || "—"}
+  </p>
+
+  <p>
+    <strong>Payment Method:</strong>{" "}
+    {selectedOrder.paymentMethod || "—"}
+  </p>
+
+  <p>
+    <strong>Order Date:</strong>{" "}
+    {formatDate(selectedOrder.createdAt)}
+  </p>
+
+  <p>
+    <strong>Status:</strong>{" "}
+    <span className="order-status-badge">
+      {selectedOrder.status || "Unknown"}
+    </span>
+  </p>
+
+  {selectedOrder.orderNotes && (
+    <p>
+      <strong>Order Notes:</strong>{" "}
+      {selectedOrder.orderNotes}
+    </p>
+  )}
+</div>
 
       <h3>Products Ordered</h3>
 

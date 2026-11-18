@@ -3,22 +3,20 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 import "./CustomerProducts.css";
 
-function CustomerProducts({ customerToken, customerUser, onSignIn }) {
+function CustomerProducts({
+  customerToken,
+  customerUser,
+  onSignIn,
+  onCheckout
+}) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("default");
    const [cartMessage, setCartMessage] = useState("");
-   const [showCheckout, setShowCheckout] = useState(false);
-const [isCheckingOut, setIsCheckingOut] = useState(false);
 
-const [checkoutForm, setCheckoutForm] = useState({
-  contactNumber: customerUser?.contactNumber || "",
-  deliveryAddress: customerUser?.deliveryAddress || "",
-  paymentMethod: "COD",
-  orderNotes: ""
-});
+
    const [selectedCategory, setSelectedCategory] = useState("all");
  const [cart, setCart] = useState(() => {
   try {
@@ -34,15 +32,6 @@ const [checkoutForm, setCheckoutForm] = useState({
   localStorage.setItem("vendoraCart", JSON.stringify(cart));
 }, [cart]);
 
-useEffect(() => {
-  if (customerUser) {
-    setCheckoutForm((current) => ({
-      ...current,
-      contactNumber: customerUser.contactNumber || "",
-      deliveryAddress: customerUser.deliveryAddress || ""
-    }));
-  }
-}, [customerUser]);
 
 
   useEffect(() => {
@@ -187,7 +176,7 @@ useEffect(() => {
 
 
 
-    const handleCheckout = () => {
+   const handleCheckout = () => {
   if (!customerToken) {
     setCartMessage("Please sign in before checking out.");
     if (onSignIn) onSignIn();
@@ -200,68 +189,7 @@ useEffect(() => {
   }
 
   setCartMessage("");
-  setShowCheckout(true);
-};
-
-const handlePlaceOrder = async (event) => {
-  event.preventDefault();
-
-  if (!customerToken || cart.length === 0) {
-    setCartMessage("Your cart is empty or your session has expired.");
-    return;
-  }
-
-  try {
-    setIsCheckingOut(true);
-    setCartMessage("Processing your order...");
-
-    const response = await api.post(
-      "/orders",
-      {
-        items: cart.map((item) => ({
-          productId: item._id,
-          quantity: item.quantity
-        })),
-        contactNumber: checkoutForm.contactNumber,
-        deliveryAddress: checkoutForm.deliveryAddress,
-        paymentMethod: checkoutForm.paymentMethod,
-        orderNotes: checkoutForm.orderNotes
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${customerToken}`
-        }
-      }
-    );
-
-    setCart([]);
-    setShowCheckout(false);
-
-    setCheckoutForm((current) => ({
-      ...current,
-      orderNotes: ""
-    }));
-
-    setCartMessage(
-      response.data?.message || "Order placed successfully!"
-    );
-
-    const productsResponse = await api.get("/products");
-
-    setProducts(
-      Array.isArray(productsResponse.data)
-        ? productsResponse.data
-        : []
-    );
-
-  } catch (err) {
-    setCartMessage(
-      err.response?.data?.message ||
-        "Checkout failed. Please try again."
-    );
-  } finally {
-    setIsCheckingOut(false);
-  }
+  if (onCheckout) onCheckout(cart);
 };
 
 
@@ -524,126 +452,7 @@ const handlePlaceOrder = async (event) => {
             <strong>₱{formatPrice(cartTotal)}</strong>
           </div>
 
-          {showCheckout && (
-  <form className="checkout-form" onSubmit={handlePlaceOrder}>
-    <h3>Checkout Details</h3>
-
-    <div className="checkout-field">
-      <label htmlFor="checkout-name">Full Name</label>
-      <input
-        id="checkout-name"
-        type="text"
-        value={customerUser?.name || ""}
-        readOnly
-      />
-    </div>
-
-    <div className="checkout-field">
-      <label htmlFor="checkout-email">Email Address</label>
-      <input
-        id="checkout-email"
-        type="email"
-        value={customerUser?.email || ""}
-        readOnly
-      />
-    </div>
-
-    <div className="checkout-field">
-      <label htmlFor="checkout-contact">Contact Number</label>
-      <input
-        id="checkout-contact"
-        type="tel"
-        value={checkoutForm.contactNumber}
-        onChange={(event) =>
-          setCheckoutForm({
-            ...checkoutForm,
-            contactNumber: event.target.value
-          })
-        }
-        maxLength={20}
-        required
-      />
-    </div>
-
-    <div className="checkout-field">
-      <label htmlFor="checkout-address">Delivery Address</label>
-      <textarea
-        id="checkout-address"
-        value={checkoutForm.deliveryAddress}
-        onChange={(event) =>
-          setCheckoutForm({
-            ...checkoutForm,
-            deliveryAddress: event.target.value
-          })
-        }
-        maxLength={300}
-        rows={3}
-        required
-      />
-    </div>
-
-    <div className="checkout-field">
-      <label htmlFor="checkout-payment">Payment Method</label>
-      <select
-        id="checkout-payment"
-        value={checkoutForm.paymentMethod}
-        onChange={(event) =>
-          setCheckoutForm({
-            ...checkoutForm,
-            paymentMethod: event.target.value
-          })
-        }
-        required
-      >
-        <option value="COD">COD (Cash on Delivery)</option>
-        <option value="Online Payment">Online Payment</option>
-      </select>
-    </div>
-
-    <div className="checkout-field">
-      <label htmlFor="checkout-notes">
-        Order Notes (Optional)
-      </label>
-      <textarea
-        id="checkout-notes"
-        value={checkoutForm.orderNotes}
-        onChange={(event) =>
-          setCheckoutForm({
-            ...checkoutForm,
-            orderNotes: event.target.value
-          })
-        }
-        maxLength={500}
-        rows={3}
-        placeholder="Additional delivery instructions..."
-      />
-    </div>
-
-    <div className="checkout-total">
-      <span>Order Total</span>
-      <strong>₱{formatPrice(cartTotal)}</strong>
-    </div>
-
-    <div className="checkout-actions">
-      <button
-        type="button"
-        onClick={() => setShowCheckout(false)}
-        disabled={isCheckingOut}
-      >
-        Back to Cart
-      </button>
-
-      <button
-        type="submit"
-        disabled={isCheckingOut}
-      >
-        {isCheckingOut ? "Processing..." : "Place Order"}
-      </button>
-    </div>
-  </form>
-)}
-
-          {!showCheckout && (
+          
   <button
     type="button"
     className="checkout-button"
@@ -651,7 +460,7 @@ const handlePlaceOrder = async (event) => {
   >
     Proceed to Checkout
   </button>
-)}
+
 
 
 

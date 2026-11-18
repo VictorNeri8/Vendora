@@ -4,6 +4,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
+const { protect } = require("../middleware/authMiddleware");
+
 const router = express.Router();
 
 // Register a new customer
@@ -141,6 +143,94 @@ router.post("/login", async (req, res) => {
     console.error("Login error:", error.message);
     return res.status(500).json({
       message: "Unable to log in."
+    });
+  }
+});
+
+// Update customer profile
+router.put("/profile", protect, async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      contactNumber,
+      deliveryAddress
+    } = req.body;
+
+    if (
+      typeof name !== "string" ||
+      typeof email !== "string" ||
+      typeof contactNumber !== "string" ||
+      typeof deliveryAddress !== "string" ||
+      !name.trim() ||
+      !email.trim() ||
+      !contactNumber.trim() ||
+      !deliveryAddress.trim() ||
+      name.trim().length > 100 ||
+      contactNumber.trim().length > 20 ||
+      deliveryAddress.trim().length > 300 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+    ) {
+      return res.status(400).json({
+        message: "Please provide valid profile information."
+      });
+    }
+
+    if (req.user.role !== "customer") {
+      return res.status(403).json({
+        message: "Only customer accounts can update this profile."
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const existingUser = await User.findOne({
+      email: normalizedEmail,
+      _id: { $ne: req.user._id }
+    });
+
+    if (existingUser) {
+      return res.status(409).json({
+        message: "This email is already being used by another account."
+      });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        name: name.trim(),
+        email: normalizedEmail,
+        contactNumber: contactNumber.trim(),
+        deliveryAddress: deliveryAddress.trim()
+      },
+      {
+        new: true,
+        runValidators: true
+      }
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        message: "Customer account not found."
+      });
+    }
+
+    return res.json({
+      message: "Profile updated successfully.",
+      user: {
+        id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        contactNumber: updatedUser.contactNumber || "",
+        deliveryAddress: updatedUser.deliveryAddress || "",
+        role: updatedUser.role
+      }
+    });
+  } catch (error) {
+    console.error("Profile update error:", error.message);
+
+    return res.status(500).json({
+      message: "Unable to update profile."
     });
   }
 });
