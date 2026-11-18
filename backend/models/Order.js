@@ -37,6 +37,45 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
       required: true
     },
+
+    // Customer information saved at the time of ordering
+    customerName: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100
+    },
+    customerEmail: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true
+    },
+    contactNumber: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 20
+    },
+    deliveryAddress: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 300
+    },
+
+    paymentMethod: {
+      type: String,
+      enum: ["COD", "Online Payment"],
+      required: true
+    },
+    orderNotes: {
+      type: String,
+      trim: true,
+      maxlength: 500,
+      default: ""
+    },
+
     items: {
       type: [orderItemSchema],
       required: true,

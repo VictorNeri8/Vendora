@@ -18,7 +18,60 @@ router.post("/", protect, async (req, res) => {
   const session = await mongoose.startSession();
 
   try {
-    const { items } = req.body;
+    const {
+      items,
+      contactNumber,
+      deliveryAddress,
+      paymentMethod,
+      orderNotes
+    } = req.body;
+
+    // Validate checkout information
+    if (
+      typeof req.user.name !== "string" ||
+      !req.user.name.trim() ||
+      typeof req.user.email !== "string" ||
+      !req.user.email.trim()
+    ) {
+      return res.status(400).json({
+        message: "Customer account information is incomplete."
+      });
+    }
+
+    if (
+      typeof contactNumber !== "string" ||
+      !contactNumber.trim() ||
+      contactNumber.trim().length > 20
+    ) {
+      return res.status(400).json({
+        message: "Please provide a valid contact number (maximum 20 characters)."
+      });
+    }
+
+    if (
+      typeof deliveryAddress !== "string" ||
+      !deliveryAddress.trim() ||
+      deliveryAddress.trim().length > 300
+    ) {
+      return res.status(400).json({
+        message: "Please provide a valid delivery address (maximum 300 characters)."
+      });
+    }
+
+    if (!["COD", "Online Payment"].includes(paymentMethod)) {
+      return res.status(400).json({
+        message: "Please select a valid payment method."
+      });
+    }
+
+    if (
+      orderNotes !== undefined &&
+      (typeof orderNotes !== "string" || orderNotes.length > 500)
+    ) {
+      return res.status(400).json({
+        message: "Order notes must not exceed 500 characters."
+      });
+    }
 
     if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
@@ -58,10 +111,6 @@ router.post("/", protect, async (req, res) => {
     let totalAmount = 0;
     let lowStockProducts = [];
     let createdOrderId = null;
-
-
-
-
 
     // Transactions require a MongoDB replica set or sharded cluster.
     await session.withTransaction(async () => {
@@ -136,6 +185,12 @@ router.post("/", protect, async (req, res) => {
         [
           {
             customer: req.user._id,
+            customerName: req.user.name.trim(),
+            customerEmail: req.user.email.trim().toLowerCase(),
+            contactNumber: contactNumber.trim(),
+            deliveryAddress: deliveryAddress.trim(),
+            paymentMethod,
+            orderNotes: (orderNotes || "").trim(),
             items: orderItems,
             totalAmount: Number(totalAmount.toFixed(2)),
             status: "confirmed"
@@ -147,26 +202,22 @@ router.post("/", protect, async (req, res) => {
       createdOrderId = createdOrders[0]._id;
     });
 
-    
-//
-
     const createdOrder = await Order.findById(createdOrderId)
-  .populate("customer", "name email");
+      .populate("customer", "name email");
 
     if (!createdOrder) {
-  return res.status(500).json({
-    message: "Order was created but could not be retrieved."
-  });
-}
+      return res.status(500).json({
+        message: "Order was created but could not be retrieved."
+      });
+    }
 
     // Send customer confirmation without failing the order.
-    
-try {
-  await sendOrderConfirmation(createdOrder);
-  console.log(`Order confirmation email sent for ${createdOrder._id}`);
-} catch (emailError) {
-  console.error("Order confirmation email failed:", emailError.message);
-}
+    try {
+      await sendOrderConfirmation(createdOrder);
+      console.log(`Order confirmation email sent for ${createdOrder._id}`);
+    } catch (emailError) {
+      console.error("Order confirmation email failed:", emailError.message);
+    }
 
     // Notify the administrator about products reaching low stock.
     for (const product of lowStockProducts) {
@@ -185,7 +236,6 @@ try {
       message: "Order confirmed and inventory updated.",
       order: createdOrder
     });
-
 
   } catch (error) {
     console.error("Create order error:", error.message);
@@ -243,7 +293,6 @@ router.patch("/:id/confirm", protect, adminOnly, async (req, res) => {
   }
 });
 
-// Admin cancels a pending order
 // Admin cancels an order and restores inventory
 router.patch("/:id/cancel", protect, adminOnly, async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
