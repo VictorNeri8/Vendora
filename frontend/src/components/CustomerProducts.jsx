@@ -161,7 +161,7 @@ function CustomerProducts({
     <main className="customer-shop">
       <header className="shop-header">
         <div>
-          <h1>Vendora Store</h1>
+          <h1>Browse Products</h1>
         </div>
       </header>
 
@@ -238,7 +238,14 @@ function CustomerProducts({
         </p>
       ) : (
         <section className="product-grid">
-          {filteredProducts.map((product) => {
+          {[...filteredProducts]
+  .sort((a, b) => {
+    const stockA = Number(a.stockQuantity) || 0;
+    const stockB = Number(b.stockQuantity) || 0;
+
+    return Number(stockA === 0) - Number(stockB === 0);
+  })
+  .map((product) => {
             const cartItem = cart.find(
               (item) => item._id === product._id
             );

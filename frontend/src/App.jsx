@@ -274,7 +274,11 @@ function App() {
   return (
     <main className="login-page">
       <section className="login-card">
-        <div className="brand-mark">V</div>
+        <img
+  src="/vendora-v-icon.svg"
+  alt=""
+  className="brand-mark"
+/>
         <h1>Vendora</h1>
         <p className="subtitle">
           E-Commerce & Inventory Management

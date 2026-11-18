@@ -62,10 +62,15 @@ function CustomerAuth({ onLogin, onClose }) {
   return (
     <main className="customer-auth-page">
       <section className="customer-auth-card">
-        <div className="customer-auth-brand">
-          <div className="customer-auth-logo">V</div>
-          <span>Vendora</span>
-        </div>
+        
+<div className="customer-auth-brand">
+  <img
+    src="/vendora-v-icon.svg"
+    alt=""
+    className="customer-auth-logo"
+  />
+  <span>Vendora</span>
+</div>
 
         <div className="customer-auth-heading">
           <h1>
