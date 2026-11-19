@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import "./CustomerProducts.css";
+import bannerImage from "../assets/Banner.webp";
 
 function CustomerProducts({
   customerToken,
@@ -158,7 +159,42 @@ function CustomerProducts({
     });
 
   return (
+     <>
     <main className="customer-shop">
+
+     <section
+  className="gaming-banner"
+  id="top"
+  style={{ backgroundImage: `url(${bannerImage})` }}
+>
+  <div className="gaming-banner-overlay">
+    <div className="gaming-banner-content">
+      <span className="gaming-banner-label">
+        VENDORA GAMING COLLECTION
+      </span>
+
+      <h1>
+        Built for Victory.
+        <br />
+        Designed for Prestige.
+      </h1>
+
+      <p>
+        Discover premium gaming gear engineered for precision,
+        performance, and an elevated gaming experience.
+      </p>
+
+      <a href="#products" className="gaming-banner-button">
+        Explore Collection
+      </a>
+    </div>
+  </div>
+</section>
+
+
+
+
+
       <header className="shop-header">
         <div>
           <h1>Browse Products</h1>
@@ -237,7 +273,7 @@ function CustomerProducts({
             : "No products match your search."}
         </p>
       ) : (
-        <section className="product-grid">
+        <section className="product-grid" id="products">
           {[...filteredProducts]
   .sort((a, b) => {
     const stockA = Number(a.stockQuantity) || 0;
@@ -352,7 +388,43 @@ function CustomerProducts({
           })}
         </section>
       )}
+
+
+
     </main>
+    <footer className="gaming-footer">
+      <div className="gaming-footer-content">
+        <div className="gaming-footer-brand">
+          <div className="gaming-footer-logo">
+            <img src="/vendora-v-icon.svg" alt="" />
+            <span>Vendora</span>
+          </div>
+
+          <p>
+            Premium gaming gear for players who demand
+            performance, precision, and excellence.
+          </p>
+        </div>
+
+        <div className="gaming-footer-links">
+          <div>
+            <h3>Explore</h3>
+            <a href="#products">Shop Products</a>
+          </div>
+
+          <div>
+            <h3>Customer</h3>
+            <a href="#top">Back to Top</a>
+          </div>
+        </div>
+      </div>
+
+      <div className="gaming-footer-bottom">
+        <p>© {new Date().getFullYear()} Vendora. All rights reserved.</p>
+        <span>Performance Meets Prestige.</span>
+      </div>
+    </footer>
+  </>
   );
 }
 
